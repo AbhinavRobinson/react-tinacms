@@ -1,55 +1,42 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import { TinaCMS, TinaCMSProvider, useCMS } from "tinacms";
+import { TinaCMS, TinaProvider, useCMS } from "tinacms";
 
 function App() {
-  const cms = new TinaCMS({
-    sidebar: true,
+  const [cms] = React.useState(() => {
+    return new TinaCMS({
+      sidebar: true,
+      toolbar: true,
+    });
   });
 
   return (
-    <TinaCMSProvider cms={cms}>
+    <TinaProvider cms={cms} position="displace">
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <p>Hello Vite + React!</p>
+          <p>{PageData.title}</p>
           <ToggleButton />
-          <p>
-            Edit <code>App.tsx</code> and save to test HMR updates.
-          </p>
-          <p>
-            <a
-              className="App-link"
-              href="https://reactjs.org"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn React
-            </a>
-            {" | "}
-            <a
-              className="App-link"
-              href="https://vitejs.dev/guide/features.html"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Vite Docs
-            </a>
-          </p>
+          <p className="App-link">{PageData.body}</p>
         </header>
       </div>
-    </TinaCMSProvider>
+    </TinaProvider>
   );
 }
 
 export default App;
 
 const ToggleButton: React.FC = () => {
-  const cms = useCMS();
+  const toggle = useCMS();
   return (
-    <button type="button" onClick={() => cms.toggle()}>
-      {cms.enabled ? "Exit Edit Mode" : "Edit This Site"}
+    <button type="button" onClick={() => toggle.toggle()}>
+      {toggle.enabled ? "Exit Edit Mode" : "Edit This Site"}
     </button>
   );
+};
+
+const PageData = {
+  title: "Hello Vite + React!",
+  body: "Learn React",
 };
