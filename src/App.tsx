@@ -2,6 +2,7 @@ import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import { TinaCMS, TinaProvider, useCMS, useForm, usePlugin } from "tinacms";
+import axios from "axios";
 
 function App() {
   const [cms] = React.useState(() => {
@@ -37,13 +38,29 @@ const PageContent: React.FC = () => {
         component: "textarea",
       },
     ],
-    initialValues: PageData,
-    onSubmit: async () => {
-      window.alert("Saved!");
+    async loadInitialValues() {
+      return axios.get("http://localhost:3001").then((res) => res.data);
+    },
+    async onSubmit(formData: { title: any; body: any }) {
+      toggle.alerts.info("Saving Content...");
+      const data = {
+        title: formData.title,
+        body: formData.body,
+      };
+      return axios
+        .post("http://localhost:3001", data, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then((response) => console.log(response.data))
+        .then(() => toggle.alerts.success("Saved Content!"))
+        .catch(() => toggle.alerts.error("Error Saving Content"));
     },
   };
   const [editableData, form] = useForm(formConfig);
   usePlugin(form);
+
   return (
     <div className="App">
       <header className="App-header">
@@ -56,9 +73,4 @@ const PageContent: React.FC = () => {
       </header>
     </div>
   );
-};
-
-const PageData = {
-  title: "Hello Vite + React!",
-  body: "Learn React",
 };
